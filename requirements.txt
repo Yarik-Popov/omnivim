@@ -1,0 +1,7 @@
+pyinstaller 
+pynput 
+keyboard 
+pyautogui 
+pystray 
+pillow 
+PyQt6 

@@ -1,41 +1,35 @@
-from pynput.mouse import Button, Controller
-from pynput.keyboard import Controller, Key
 import keyboard
 from Windows_Mouse_Movments.normal_mode import normal_on_key_event as normal
 from Windows_Mouse_Movments.mouse_mode import mouse_on_key_event as mouse
 from Windows_Mouse_Movments.visual_mode import visual_on_key_event as visual
-from Windows_Mouse_Movments.write_mode import write_mode
+from common.mode import Mode
+from common.mode_manager import ModeManager
 
 
 ctrl_mode = False
 shift_mode = False
 
 # wrapper function required for main.py to run
-def run_windows():
+def run_windows(mode_manager: ModeManager):
 
     def on_key_event(event):
         global ctrl_mode,shift_mode
-
-        # file used to dictate mode (visual, normal, insert, mouse)
-        with open("Windows_Mouse_Movments/vimmode.txt", "r") as f:
-            mode = f.read().strip()
-        f.close()
-
+        mode = mode_manager.get_mode()
 
         if event.event_type == 'down':
 
             # only allow switching to other modes from normal mode
-            if mode == "normal":
+            if mode == Mode.NORMAL:
 
                 match event.name:
                     case "i":
-                        write_mode("insert")
+                        mode_manager.set_mode(Mode.INSERT)
                         return False
                     case "v":
-                        write_mode("visual")
+                        mode_manager.set_mode(Mode.VISUAL)
                         return False
                     case "m":
-                        write_mode("mouse")
+                        mode_manager.set_mode(Mode.MOUSE)
                         return False
 
                 # saving in normal mode
@@ -45,48 +39,48 @@ def run_windows():
                     return False
 
             # exit back to normal mode
-            elif ((ctrl_mode and event.name == "c") or event.name=="esc") and mode != "kill":
+            elif ((ctrl_mode and event.name == "c") or event.name=="esc") and mode != Mode.OFF:
                 keyboard.release("ctrl")
                 keyboard.release("shift")
-                write_mode("normal")
+                mode_manager.set_mode(Mode.NORMAL)
                 ctrl_mode=False
                 return False
             match mode:
-                case "visual":
+                case Mode.VISUAL:
                     if event.name == "shift":
                         shift_mode = True
                     if event.name == "ctrl":
                         ctrl_mode = True
                     elif shift_mode and ctrl_mode:
                         if event.name == "q":
-                            write_mode("kill")
+                            mode_manager.set_mode(Mode.OFF)
                     else:
-                        visual(event)
-                case "normal":
+                        mode_manager.set_mode(visual(event))
+                case Mode.NORMAL:
                     if event.name == "shift":
                         shift_mode = True
                     if event.name == "ctrl":
                         ctrl_mode = True
                     elif shift_mode and ctrl_mode:
                         if event.name == "Q":
-                            write_mode("kill")
+                            mode_manager.set_mode(Mode.OFF)
                     else:
-                        normal(event)
+                        mode_manager.set_mode(normal(event))
 
-                case "mouse":
+                case Mode.MOUSE:
                     if event.name == "shift":
                         shift_mode = True 
                     if event.name == "ctrl":
                         ctrl_mode = True
                     elif shift_mode and ctrl_mode:
                         if event.name == "q":
-                            write_mode("kill")
+                            mode_manager.set_mode(Mode.OFF)
                     else:
-                        mouse(event)
+                        mode_manager.set_mode(mouse(event))
                         shift_mode = False
                         ctrl_mode = False
 
-                case "insert" | "kill":
+                case Mode.INSERT | Mode.OFF:
                     if event.event_type == "down":
                         # allows for default key-binds to be used in insert mode
                         if event.name == "ctrl":
@@ -113,7 +107,7 @@ def run_windows():
                                 return False
                         elif shift_mode and ctrl_mode:
                             if event.name == "q":
-                                write_mode("normal" if mode == "kill" else "kill")
+                                mode_manager.set_mode(Mode.NORMAL if mode == Mode.OFF else Mode.OFF)
                             elif event.name in ["up","down","left","right"]:
                                 keyboard.send(f"ctrl+right shift + left shift + {event.name}")
                                 return False
@@ -126,7 +120,7 @@ def run_windows():
 
         # release held keys for mouse navigation
         elif event.event_type == 'up' and mode == "mouse":
-            mouse(event)
+            mode_manager.set_mode(mouse(event))
             return False
 
         # release held keys for multi key combos 

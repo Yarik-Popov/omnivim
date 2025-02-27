@@ -1,20 +1,21 @@
 import threading
 import time
 
-import keyboard
 import pyautogui
 from pynput.keyboard import Controller as KeyboardController
 from pynput.mouse import Button, Controller
+
+from common.mode import Mode
 
 mouse = Controller()
 kb_controller = KeyboardController()
 
 # Flags to control mouse movement
-moving_left = False
-moving_right = False
-moving_up = False
-moving_down = False
-scrolling_down = False
+moving_left = False 
+moving_right = False 
+moving_up = False 
+moving_down = False 
+scrolling_down = False 
 scrolling_up = False 
 speed_multiplier = 1
 
@@ -80,7 +81,7 @@ def scroll_up():
         time.sleep(0.01)
 
 
-def mouse_on_key_event(event):
+def mouse_on_key_event(event) -> Mode:
     global moving_left, moving_right, moving_up, moving_down, speed_multiplier,scrolling_up,scrolling_down
     if event.event_type == "down":
         match event.name:
@@ -92,27 +93,27 @@ def mouse_on_key_event(event):
         if event.name in ["h", "H"] and not moving_left:
             moving_left = True
             threading.Thread(target=move_mouse_left, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["l", "L"] and not moving_right:
             moving_right = True
             threading.Thread(target=move_mouse_right, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["k", "K"] and not moving_up:
             moving_up = True
             threading.Thread(target=move_mouse_up, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["j", "J"] and not moving_down:
             moving_down = True
             threading.Thread(target=move_mouse_down, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["i", "I"] and not moving_down:
             scrolling_down = True
             threading.Thread(target=scroll_down, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["u", "U"] and not moving_up:
             scrolling_up = True
             threading.Thread(target=scroll_up, daemon=True).start()
-            return False
+            return Mode.MOUSE
         elif event.name in ["q", "w", "e", "r", "a", "s", "d", "f", "z", "x", "c", "v"]:
             segment_index = {
                 "q": 0,
@@ -133,13 +134,13 @@ def mouse_on_key_event(event):
                 x + segment_width // 2,
                 y + segment_height // 2,
             )  # Center of the segment
-            return False
+            return Mode.MOUSE
         elif event.name == "space":
             mouse.click(Button.left)
-            return False
+            return Mode.MOUSE
         elif event.name == "n":
             mouse.click(Button.right)
-            return False
+            return Mode.MOUSE
     elif event.event_type == "up":
         match event.name:
             case "h" | "H":
@@ -154,8 +155,5 @@ def mouse_on_key_event(event):
                 scrolling_up = False
             case "i" | "I":
                 scrolling_down = False
-        return False
-
-
-# keyboard.hook(mouse_on_key_event, suppress=True)
-# keyboard.wait("esc")
+        return Mode.MOUSE
+    return Mode.MOUSE

@@ -7,3 +7,4 @@ venv
 .venv
 Images/Omnivim.ico
 __pycache__/
+*.egg-info

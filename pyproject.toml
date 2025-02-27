@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=59.0", "wheel"]
+
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+include = ["pyproject.toml", "**/*.py"]
+exclude = [
+  "dist/*"
+]
+target-version = "py312"
+line-length = 120
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+docstring-code-format = false
+docstring-code-line-length = "dynamic"

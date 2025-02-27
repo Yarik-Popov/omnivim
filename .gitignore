@@ -1,9 +1,9 @@
-*.txt
-Windows_Mouse_Movments/__pycache__/
+vimmode.txt
 build
 dist
 Omnivim.exe
 Omnivim.spec
 venv
+.venv
 Images/Omnivim.ico
-__pycache__
+__pycache__/

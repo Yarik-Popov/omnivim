@@ -152,7 +152,7 @@ To set up Omnivim on your system, follow these steps:
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/derekGou/omnivim.git
+git clone https://github.com/Yarik-Popov/omnivim.git
 ```
 
 ### Navigate to the Project Directory
@@ -173,6 +173,9 @@ setup.bat
 
 ```bash
 sudo apt-get install python3-pip python3-tk python3-dev libxcb-cursor0  # Install dependencies
+python3 -m venv .venv # You might need to install python3-venv before this
+. .venv/bin/activate
+pip install -r requirements.txt # You might need to install pip before this
 ./build.sh
 ```
 

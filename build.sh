@@ -1,9 +1,4 @@
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-python -c "from PIL import Image; Image.open('Images/omnivim.png').save('Images/omnivim.ico')"
+python3 -c "from PIL import Image; Image.open('images/omnivim.png').save('images/omnivim.ico')"
 mkdir -p dist dist/Windows_Mouse_Movments
-pyinstaller --onefile --windowed --name Omnivim --icon="Images/omnivim.ico" --add-data="Images:Images" --add-data="Ibm.ttf:." --add-data="style.css:." --add-data="Images/omnivim.png:Images" --add-data="Images/omnivimi.png:Images" --add-data="Images/omnivimm.png:Images" --add-data="Images/omnivimn.png:Images" --add-data="Images/omnivimv.png:Images" --add-data="Windows_Mouse_Movments:Windows_Mouse_Movments" main.py
-cp -r Images dist/Images
-touch dist/Windows_Mouse_Movments/vimmode.txt
+pyinstaller --collect-all=common --collect-all=graphics --collect-all=images --collect-all=Windows_Mouse_Movments --onefile --windowed --name Omnivim --icon="images/omnivim.ico" --add-data="images:images" --add-data="Ibm.ttf:." --add-data="style.css:." --add-data="images/omnivim.png:images" --add-data="images/omnivimi.png:images" --add-data="images/omnivimm.png:images" --add-data="images/omnivimn.png:images" --add-data="images/omnivimv.png:images" --add-data="Windows_Mouse_Movments:Windows_Mouse_Movments" --hidden-import=pynput --hidden-import=keyboard --hidden-import=pyautogui --hidden-import=pystray --hidden-import=pillow --hidden-import=PyQt6 main.py
+cp -r images dist/images
